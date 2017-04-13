@@ -9,13 +9,25 @@
 	//skapa en HTTP-client
 	$client = new Client();
 	//Anropa URL: http://unicorns.idioti.se/
-	$res = $client->request('GET', 'http://unicorns.idioti.se/', [
-	'headers' => [
-	'Accept' => 'application/json'
-	]
-	]);
-	//Omvandla JSON-svar till datatyper
-	$data = json_decode($res->getBody());
+
+	if (isset($_GET['number'])) {
+		// Hämta en enhörning
+		$res = $client->request('GET', 'http://unicorns.idioti.se/' . $_GET['number'], [
+		'headers' => [
+		'Accept' => 'application/json'
+		]
+		]);
+		$data = json_decode($res->getBody());
+	} else {
+		//hämtar alla enhörningar
+		$res = $client->request('GET', 'http://unicorns.idioti.se/', [
+		'headers' => [
+		'Accept' => 'application/json'
+		]
+		]);
+		//Omvandla JSON-svar till datatyper
+		$data = json_decode($res->getBody());
+	}
 	?>
 <!doctype html>
 <html>
@@ -36,26 +48,28 @@
         </div>
     </div>
 		<script>
+
 		$(document).ready(function(){
-    $(".hide").click(function(){
+    $(".visa").click(function(){
 				console.log('hej');
-        $(".show").toggle();
+        $(".visaMer").toggle();
     });
 });
 		</script>
       <div class="container">
         <div class="row">
             <div class="col-sm-3">
+
             </div>
             <div class="col-sm-6">
-                <form action = "<?php $_PHP_SELF ?>" method = "POST">
+                <form action = "<?php $_PHP_SELF ?>" method = "GET">
                     <div class="form-group">
                     <label for="search">Sök på Enhörningens ID <span class="glyphicon glyphicon-search"></span></label>
                     <br>
                     <input type="text" class="form-control" name="number">
                     <br>
-                    <button type="submit" id="unicorn" class="btn btn-info" value="Button1">Visa Enhörning</button>
-                    <button type="button" id="buttonColor" class="btn btn-info" value=" Button2"> Visa Alla Enhörningar</button>
+                    <button type="submit" id="unicorn" class="btn btn-info" value="Button1">Visa enhörning</a></button>
+                    <button type="submit" id="buttonColor" class="btn btn-info" value="Button2"> <a href="localhost:8080" id="textColor">Visa alla enhörningar</a></button>
                     </div>
                 </form>
 				<br>
@@ -63,9 +77,22 @@
 				<script>
 					</script>
 				<?php
-				foreach ($data as $key => $value) {
-					echo "<div class='panel panel-default'><div class='panel-heading'> <p>Id: $value->id $value->name </p> <button type='button' class='btn btn-default btn-xs' class='hide'>Läs mer</button></div> </div> <div class='panel-body' class=show><p>Hej</p></div>";
+				if (isset($_GET['number'])){
+					echo "<div class='unicornNr'>
+					<h3> $data->id $data->name</h3>
+					<p>$data->description</p>
+					<img src='$data->image' alt=''>
+					<p> Reporterat av: $data->reportedBy</p>
+					</div>";
 				}
-				?>
 
+				if (empty($_GET['number'])) {
+					foreach ($data as $key => $value) {
+						echo "<div class='panel panel-default'><div class='panel-heading'> <h4>Id: $value->id $value->name </h4> <button type='button' class='btn btn-default btn-xs visa'>Läs mer</button></div></div><div class='panel-body visaMer'><a href=$value->details>$value->details</a></div>";
+						}
+
+
+			}
+				?>
+	</body>
 </html>
