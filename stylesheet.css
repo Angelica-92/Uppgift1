@@ -1,0 +1,21 @@
+.header {
+    width: 100%;
+    height: 150px;
+}
+
+#buttonColor {
+    background-color: #9999ff;
+    border-color:#8080ff;
+}
+
+.box {
+	padding-top: 2px; !important
+}
+
+.panel {
+	margin-bottom: 0px; !important
+}
+
+#textColor {
+  color: white;
+}
